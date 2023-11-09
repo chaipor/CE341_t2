@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AES-128 Decryption with CTR Mode</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
+</head>
+
+<body>
+    <h1>AES-128 Decryption with CTR Mode</h1>
+    <label for="encryptedText">Enter Encrypted Text (Base64):</label>
+    <textarea id="encryptedText"></textarea>
+    <br><br>
+    <label for="secretKey">Enter Secret Key:</label>
+    <input type="text" id="secretKey">
+    <br><br>
+    <button onclick="decryptText()">Decrypt</button>
+    <br><br>
+    <p><strong>Decrypted Text:</strong></p>
+    <textarea id="decryptedText" rows="4" cols="50" readonly></textarea>
+
+    <script>
+        function decryptText() {
+            const encryptedBase64 = document.getElementById('encryptedText').value;
+            const secretKey = document.getElementById('secretKey').value;
+
+            // Convert secretKey to a WordArray
+            const key = CryptoJS.enc.Utf8.parse(secretKey);
+
+            // Split the input into IV and ciphertext
+            const ivBase64 = encryptedBase64.substring(0, 24); // IV is 16 bytes, which is 24 characters in Base64
+            const ciphertextBase64 = encryptedBase64.substring(24);
+
+            // Convert IV and ciphertext from Base64 to WordArray
+            const iv = CryptoJS.enc.Base64.parse(ivBase64);
+            const ciphertext = CryptoJS.enc.Base64.parse(ciphertextBase64);
+
+            // Decrypt text using AES-128 in CTR mode
+            const decrypted = CryptoJS.AES.decrypt(
+                {
+                    ciphertext: ciphertext
+                },
+                key,
+                {
+                    iv: iv,
+                    mode: CryptoJS.mode.CTR
+                }
+            );
+
+            // Display the decrypted text
+            document.getElementById('decryptedText').value = decrypted.toString(CryptoJS.enc.Utf8);
+        }
+    </script>
+</body>
+
+</html>
