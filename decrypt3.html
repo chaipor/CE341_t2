@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AES-128 Decryption with Block Cipher Mode</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.js"></script>
+</head>
+
+<body>
+    <h1>AES-128 Decryption with Block Cipher Mode</h1>
+    <label for="encryptedText">Enter Encrypted Text (Base64):</label>
+    <textarea id="encryptedText"></textarea>
+    <br><br>
+    <label for="secretKey">Enter Secret Key:</label>
+    <input type="text" id="secretKey">
+    <br><br>
+    <label for="cipherMode">Select Block Cipher Mode:</label>
+    <select id="cipherMode">
+        <option value="CBC">CBC</option>
+        <option value="CFB">CFB</option>
+        <option value="OFB">OFB</option>
+        <option value="CTR">CTR</option>
+    </select>
+    <br><br>
+    <button onclick="decryptText()">Decrypt</button>
+    <br><br>
+    <p><strong>Decrypted Text:</strong></p>
+    <textarea id="decryptedText" rows="4" cols="50" readonly></textarea>
+
+    <script>
+        function decryptText() {
+            const encryptedBase64 = document.getElementById('encryptedText').value;
+            const secretKey = document.getElementById('secretKey').value;
+            const selectedCipherMode = document.getElementById('cipherMode').value;
+
+            // Convert secretKey to a WordArray
+            const key = CryptoJS.enc.Utf8.parse(secretKey);
+
+            // Extract IV from the encrypted text
+            const ivBase64 = encryptedBase64.substring(0, 24); // IV is 16 bytes, which is 24 characters in Base64
+
+            // Convert IV and ciphertext from Base64 to WordArray
+            const iv = CryptoJS.enc.Base64.parse(ivBase64);
+            const ciphertextBase64 = encryptedBase64.substring(24);
+
+            // Decrypt text using AES-128 with the selected block cipher mode
+            const decrypted = CryptoJS.AES.decrypt(
+                ciphertextBase64,
+                key,
+                {
+                    iv: iv,
+                    mode: CryptoJS.mode[selectedCipherMode],
+                }
+            );
+
+            // Display the decrypted text
+            document.getElementById('decryptedText').value = decrypted.toString(CryptoJS.enc.Utf8);
+        }
+    </script>
+</body>
+
+</html>
